@@ -1,7 +1,8 @@
-
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
+
 import {
   Menu,
   X,
@@ -9,36 +10,108 @@ import {
   ShoppingBag,
   Search,
   Sparkles,
+  User,
+  LogIn,
+  UserPlus,
+  LogOut,
+  ChevronDown,
 } from "lucide-react";
-import { useState } from "react";
+
 import { ModeToggle } from "../Module/Them";
 
+/* ================= USER TYPE ================= */
+
+type UserData = {
+  name: string;
+  email: string;
+  role: "USER";
+};
+
+/* ================= DEMO USER ================= */
+
+const demoUser: UserData = {
+  name: "Sojibur Asif",
+  email: "sojibur@example.com",
+  role: "USER",
+};
+
 export function Navbar() {
-  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  /*
+   * Demo user initially logged in.
+   * Logout করলে user null হবে এবং Login/Register দেখাবে।
+   */
+  const [user, setUser] = useState<UserData | null>(demoUser);
+
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+
+  /* ================= NAVIGATION ================= */
 
   const navLinks = [
-    { name: "Home", href: "/" },
-    { name: "New Arrivals", href: "/collection" },
-    { name: "Collections", href: "/collections" },
-    { name: "Lookbook", href: "/lookbook" },
-    { name: "About", href: "/about" },
+    {
+      name: "Home",
+      href: "/",
+    },
+    {
+      name: "New Arrivals",
+      href: "/collection",
+    },
+    {
+      name: "Collections",
+      href: "/collections",
+    },
+    {
+      name: "Gallery",
+      href: "/gallery",
+    },
+    {
+      name: "Lookbook",
+      href: "/lookbook",
+    },
+    {
+      name: "About",
+      href: "/about",
+    },
   ];
+
+  /* ================= LOGOUT ================= */
+
+  const handleLogout = () => {
+    setUser(null);
+    setIsUserMenuOpen(false);
+    setIsMenuOpen(false);
+  };
+
+  /* ================= CLOSE MOBILE MENU ================= */
+
+  const closeMobileMenu = () => {
+    setIsMenuOpen(false);
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-slate-200/70 bg-[#fffaf8]/90 backdrop-blur-xl dark:border-slate-800/70 dark:bg-slate-950/90">
-      {/* Announcement Bar */}
+      {/* =====================================================
+          ANNOUNCEMENT BAR
+      ===================================================== */}
+
       <div className="hidden border-b border-rose-100 bg-rose-50/70 sm:block dark:border-rose-900/50 dark:bg-rose-950/30">
         <div className="mx-auto flex max-w-7xl items-center justify-center gap-2 px-6 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-rose-500 dark:text-rose-300">
           <Sparkles className="h-3.5 w-3.5" />
+
           <span>
             New Season • Free Worldwide Shipping On Orders Over $100
           </span>
         </div>
       </div>
 
-      {/* Main Navbar */}
+      {/* =====================================================
+          MAIN NAVBAR
+      ===================================================== */}
+
       <nav className="mx-auto flex h-[76px] max-w-7xl items-center justify-between px-5 sm:px-6 lg:px-8">
-        {/* Brand Logo */}
+        {/* ================= LOGO ================= */}
+
         <Link
           href="/"
           className="group flex items-center gap-3"
@@ -53,7 +126,7 @@ export function Navbar() {
             </div>
           </div>
 
-          {/* Brand Name */}
+          {/* Brand */}
           <div className="leading-none">
             <span className="block font-serif text-[22px] font-bold tracking-[-0.02em] text-slate-950 dark:text-white">
               Fashion
@@ -65,7 +138,10 @@ export function Navbar() {
           </div>
         </Link>
 
-        {/* Desktop Navigation */}
+        {/* =====================================================
+            DESKTOP NAVIGATION
+        ===================================================== */}
+
         <div className="hidden items-center gap-8 lg:flex">
           {navLinks.map((item) => (
             <Link
@@ -75,13 +151,15 @@ export function Navbar() {
             >
               {item.name}
 
-              {/* Hover Line */}
               <span className="absolute bottom-0 left-1/2 h-[1.5px] w-0 -translate-x-1/2 rounded-full bg-rose-500 transition-all duration-300 group-hover:w-full" />
             </Link>
           ))}
         </div>
 
-        {/* Desktop Actions */}
+        {/* =====================================================
+            DESKTOP ACTIONS
+        ===================================================== */}
+
         <div className="hidden items-center gap-2 md:flex">
           {/* Search */}
           <button
@@ -113,15 +191,126 @@ export function Navbar() {
           >
             <ShoppingBag className="h-4 w-4" />
 
-            <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-slate-950 text-[9px] font-bold text-white">
+            <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-slate-950 text-[9px] font-bold text-white dark:bg-white dark:text-slate-950">
               3
             </span>
           </button>
 
-          {/* Theme Toggle */}
+          {/* Theme */}
           <div className="ml-1">
             <ModeToggle />
           </div>
+
+          {/* =================================================
+              USER / LOGIN / REGISTER
+          ================================================= */}
+
+          {user ? (
+            <div className="relative ml-2">
+              {/* User Button */}
+              <button
+                type="button"
+                onClick={() => setIsUserMenuOpen((prev) => !prev)}
+                aria-expanded={isUserMenuOpen}
+                aria-haspopup="menu"
+                className="group flex items-center gap-2 rounded-full border border-slate-200 bg-white px-2 py-1.5 pr-3 transition-all duration-200 hover:border-rose-200 hover:bg-rose-50 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-rose-800 dark:hover:bg-rose-950/30"
+              >
+                {/* Avatar */}
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-rose-500 text-xs font-bold text-white">
+                  {user.name.charAt(0).toUpperCase()}
+                </div>
+
+                {/* User Name + Role */}
+                <div className="hidden text-left xl:block">
+                  <p className="max-w-[110px] truncate text-xs font-semibold text-slate-900 dark:text-white">
+                    {user.name}
+                  </p>
+
+                  <p className="text-[9px] font-bold uppercase tracking-wider text-rose-500">
+                    {user.role}
+                  </p>
+                </div>
+
+                <ChevronDown
+                  className={`h-4 w-4 text-slate-400 transition-transform duration-200 ${
+                    isUserMenuOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+
+              {/* User Dropdown */}
+              {isUserMenuOpen && (
+                <div className="absolute right-0 top-14 z-50 w-64 overflow-hidden rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl shadow-slate-900/10 dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/30">
+                  {/* User Information */}
+                  <div className="rounded-xl bg-rose-50 p-4 dark:bg-rose-950/30">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-rose-500 text-sm font-bold text-white">
+                        {user.name.charAt(0).toUpperCase()}
+                      </div>
+
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold text-slate-900 dark:text-white">
+                          {user.name}
+                        </p>
+
+                        <p className="truncate text-xs text-slate-500 dark:text-slate-400">
+                          {user.email}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Role */}
+                    <div className="mt-3 inline-flex rounded-full bg-white px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-rose-500 dark:bg-slate-900">
+                      Role: {user.role}
+                    </div>
+                  </div>
+
+                  {/* Profile */}
+                  <Link
+                    href="/profile"
+                    onClick={() => setIsUserMenuOpen(false)}
+                    className="mt-2 flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-100 hover:text-rose-500 dark:text-slate-300 dark:hover:bg-slate-800"
+                  >
+                    <User className="h-4 w-4" />
+                    My Profile
+                  </Link>
+
+                  {/* Logout */}
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-red-500 transition hover:bg-red-50 dark:hover:bg-red-950/30"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            /* =================================================
+               LOGGED OUT
+            ================================================= */
+            <div className="ml-2 flex items-center gap-2">
+              {/* Login */}
+              <Link
+                href="/Login"
+                className="inline-flex items-center gap-2 rounded-full border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 transition-all duration-300 hover:border-rose-300 hover:bg-rose-50 hover:text-rose-500 dark:border-slate-700 dark:text-slate-300 dark:hover:border-rose-700 dark:hover:bg-rose-950/30 dark:hover:text-rose-400"
+              >
+                <LogIn className="h-4 w-4" />
+                Login
+              </Link>
+
+              {/* Register */}
+              {/* <Link
+                href="/Register"
+                className="inline-flex items-center gap-2 rounded-full bg-rose-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-rose-500/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-rose-600 hover:shadow-rose-500/30"
+              >
+                <UserPlus className="h-4 w-4" />
+                Register
+              </Link> */}
+            </div>
+          )}
 
           {/* Shop Now */}
           <Link
@@ -132,17 +321,18 @@ export function Navbar() {
           </Link>
         </div>
 
-        {/* Mobile Controls */}
+        {/* =====================================================
+            MOBILE CONTROLS
+        ===================================================== */}
+
         <div className="flex items-center gap-2 md:hidden">
-          {/* Mobile Theme Toggle */}
           <div className="hidden sm:block">
             <ModeToggle />
           </div>
 
-          {/* Mobile Menu Button */}
           <button
             type="button"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            onClick={() => setIsMenuOpen((prev) => !prev)}
             aria-label={isMenuOpen ? "Close menu" : "Open menu"}
             aria-expanded={isMenuOpen}
             className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition-all hover:border-rose-200 hover:bg-rose-50 hover:text-rose-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-rose-700 dark:hover:bg-rose-950/50"
@@ -156,22 +346,25 @@ export function Navbar() {
         </div>
       </nav>
 
-      {/* Mobile Navigation */}
+      {/* =====================================================
+          MOBILE NAVIGATION
+      ===================================================== */}
+
       <div
         className={`overflow-hidden border-t border-slate-200/70 bg-[#fffaf8] transition-all duration-300 dark:border-slate-800/70 dark:bg-slate-950 md:hidden ${
           isMenuOpen
-            ? "max-h-[650px] opacity-100"
+            ? "max-h-[900px] opacity-100"
             : "max-h-0 opacity-0"
         }`}
       >
         <div className="mx-auto max-w-7xl px-5 py-5 sm:px-6">
-          {/* Mobile Nav Links */}
+          {/* Mobile Links */}
           <div className="flex flex-col">
             {navLinks.map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
-                onClick={() => setIsMenuOpen(false)}
+                onClick={closeMobileMenu}
                 className="flex items-center justify-between border-b border-slate-100 py-4 text-sm font-medium text-slate-700 transition-colors hover:text-rose-500 dark:border-slate-800 dark:text-slate-300"
               >
                 <span>{item.name}</span>
@@ -183,8 +376,86 @@ export function Navbar() {
             ))}
           </div>
 
-          {/* Mobile Action Buttons */}
-          <div className="mt-5 grid grid-cols-3 gap-2">
+          {/* =================================================
+              MOBILE USER / AUTH
+          ================================================= */}
+
+          {user ? (
+            <div className="mt-5 rounded-2xl border border-rose-100 bg-rose-50 p-4 dark:border-rose-900/50 dark:bg-rose-950/30">
+              {/* User Info */}
+              <div className="flex items-center gap-3">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-rose-500 text-sm font-bold text-white">
+                  {user.name.charAt(0).toUpperCase()}
+                </div>
+
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold text-slate-900 dark:text-white">
+                    {user.name}
+                  </p>
+
+                  <p className="truncate text-xs text-slate-500 dark:text-slate-400">
+                    {user.email}
+                  </p>
+
+                  <span className="mt-1 inline-block text-[10px] font-bold uppercase tracking-wider text-rose-500">
+                    Role: {user.role}
+                  </span>
+                </div>
+              </div>
+
+              {/* Profile / Logout */}
+              <div className="mt-4 grid grid-cols-2 gap-2">
+                <Link
+                  href="/profile"
+                  onClick={closeMobileMenu}
+                  className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white py-3 text-xs font-semibold text-slate-700 transition hover:border-rose-300 hover:text-rose-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300"
+                >
+                  <User className="h-4 w-4" />
+                  Profile
+                </Link>
+
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="flex items-center justify-center gap-2 rounded-xl bg-red-500 py-3 text-xs font-semibold text-white transition hover:bg-red-600"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Logout
+                </button>
+              </div>
+            </div>
+          ) : (
+            /* =================================================
+               MOBILE LOGIN / REGISTER
+            ================================================= */
+            <div className="mt-5 grid grid-cols-2 gap-2">
+              {/* Login */}
+              <Link
+                href="/Login"
+                onClick={closeMobileMenu}
+                className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white py-3 text-sm font-semibold text-slate-700 transition hover:border-rose-300 hover:bg-rose-50 hover:text-rose-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-rose-700"
+              >
+                <LogIn className="h-4 w-4" />
+                Login
+              </Link>
+
+              {/* Register */}
+              {/* <Link
+                href="/Register"
+                onClick={closeMobileMenu}
+                className="flex items-center justify-center gap-2 rounded-xl bg-rose-500 py-3 text-sm font-semibold text-white transition hover:bg-rose-600"
+              >
+                <UserPlus className="h-4 w-4" />
+                Register
+              </Link> */}
+            </div>
+          )}
+
+          {/* =================================================
+              MOBILE ACTIONS
+          ================================================= */}
+
+          <div className="mt-3 grid grid-cols-3 gap-2">
             {/* Search */}
             <button
               type="button"
@@ -213,10 +484,10 @@ export function Navbar() {
             </button>
           </div>
 
-          {/* Mobile Shop Button */}
+          {/* Mobile Shop */}
           <Link
             href="/collection"
-            onClick={() => setIsMenuOpen(false)}
+            onClick={closeMobileMenu}
             className="mt-3 flex w-full items-center justify-center rounded-xl bg-slate-950 py-3.5 text-sm font-bold text-white transition-all hover:bg-rose-500 dark:bg-white dark:text-slate-950 dark:hover:bg-rose-500 dark:hover:text-white"
           >
             Shop Collection
@@ -228,4 +499,3 @@ export function Navbar() {
 }
 
 export default Navbar;
-
